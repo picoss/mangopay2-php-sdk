@@ -22,7 +22,9 @@ class Disputes extends Base {
     
     function setUp(){
         $pagination = new \MangoPay\Pagination(1, 100);
-        $this->_clientDisputes = $this->_api->Disputes->GetAll($pagination);
+        $sorting = new \MangoPay\Sorting();
+        $sorting->AddField('CreationDate', \MangoPay\SortDirection::DESC);
+        $this->_clientDisputes = $this->_api->Disputes->GetAll($pagination, $sorting);
         if (is_null($this->_clientDisputes) || count($this->_clientDisputes) == 0){
             $this->_canTestDisputes = false;
         }
@@ -109,6 +111,7 @@ class Disputes extends Base {
         
         $this->assertNotNull($result);
         $this->assertEqual($result->Type, \MangoPay\DisputeDocumentType::DeliveryProof);
+        $this->assertEqual($result->DisputeId, $disputeForDoc->Id);
     }
     
     function test_Disputes_CreateDisputePage() {
@@ -247,6 +250,7 @@ class Disputes extends Base {
         $this->assertEqual($result->Status, $docCreated->Status);
         $this->assertEqual($result->Tag, $docCreated->Tag);
         $this->assertEqual($result->Type, $docCreated->Type);
+        $this->assertEqual($result->DisputeId, $disputeForTest->Id);
     }
     
     function test_Disputes_GetDocumentsForDispute() {
